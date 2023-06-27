@@ -46,4 +46,28 @@ describe("GET /api", () => {
             expect(Object.keys(body.endpoints).length).toBeGreaterThan(0);
         });
     });
-})
+});
+
+describe("GET /api/articles/:article_id", () => {
+    it("should respond with a status code of 200 when user enters existing article_id", () => {
+        return request(app)
+        .get("/api/articles/2")
+        .expect(200);
+    });
+    it("should respond with a single correctly formatted article object on a key of article", () => {
+        return request(app)
+        .get("/api/articles/3")
+        .then(({body}) => {
+            expect(body.article).toEqual(expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                body: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String)
+            }));
+        })
+    });
+});
