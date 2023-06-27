@@ -13,23 +13,20 @@ describe("GET/api/topics", () => {
         .get("/api/topics")
         .expect(200);
     });
-    it("should return an object with a key of topics", () => {
-        return request(app)
-        .get("/api/topics")
-        .then(({body}) => {
-            expect(body).toHaveProperty("topics");
-        });
-    });
     it("should have a 'slug' and 'description' key in each returned object within the topics array", () => {
         return request(app)
         .get("/api/topics")
         .then(({body}) => {
-            body.topics.forEach(topic => {
-                expect(topic).toEqual(expect.objectContaining({
-                    slug: expect.any(String),
-                    description: expect.any(String)
-                }));
-            })
+            if (body.topics.length > 0) {
+                body.topics.forEach(topic => {
+                    expect(topic).toEqual(expect.objectContaining({
+                        slug: expect.any(String),
+                        description: expect.any(String)
+                    }));
+                })
+            } else {
+                expect(body.topics).toEqual([]);
+            }
         });
     });
 });

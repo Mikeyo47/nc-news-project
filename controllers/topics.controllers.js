@@ -1,6 +1,6 @@
 const { 
     selectAllTopics 
-} = require("../modules/topics.modules")
+} = require("../models/topics.models")
 
 function getTopics(_, res) {
     selectAllTopics().then((topics) => {
