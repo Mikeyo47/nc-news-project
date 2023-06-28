@@ -70,4 +70,20 @@ describe("GET /api/articles/:article_id", () => {
             }));
         })
     });
+    it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+        return request(app)
+        .get("/api/articles/nonsense")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Bad request");
+        });
+    });
+    it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+        return request(app)
+        .get("/api/articles/9900")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Not found");
+        });
+    });
 });

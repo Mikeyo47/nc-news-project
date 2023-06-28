@@ -1,6 +1,6 @@
 const db = require("../db/connection")
 
-function selectAllTopics() {
+exports.selectAllTopics = () => {
     return db.query(
         `SELECT *
         FROM topics;`)
@@ -8,5 +8,3 @@ function selectAllTopics() {
         return topics.rows;
     });
 }
-
-module.exports = { selectAllTopics }
