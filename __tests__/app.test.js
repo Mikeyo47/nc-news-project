@@ -46,4 +46,44 @@ describe("GET /api", () => {
             expect(Object.keys(body.endpoints).length).toBeGreaterThan(0);
         });
     });
-})
+});
+
+describe("GET /api/articles/:article_id", () => {
+    it("should respond with a status code of 200 when user enters existing article_id", () => {
+        return request(app)
+        .get("/api/articles/2")
+        .expect(200);
+    });
+    it("should respond with a single correctly formatted article object on a key of article", () => {
+        return request(app)
+        .get("/api/articles/3")
+        .then(({body}) => {
+            expect(body.article).toEqual(expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: 3,
+                body: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String)
+            }));
+        })
+    });
+    it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+        return request(app)
+        .get("/api/articles/nonsense")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Bad request");
+        });
+    });
+    it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+        return request(app)
+        .get("/api/articles/9900")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Not found");
+        });
+    });
+});
