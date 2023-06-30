@@ -12,3 +12,7 @@ exports.handleCustomErrors = (err, _, res, next) => {
         next(err);
     };
 };
+exports.handleServerErrors = (err, req, res, next) => {
+    console.log(err, "<<<<500: customer server error message")
+    res.status(500).send({ msg: "Ooops! Something's broken!" });
+  };

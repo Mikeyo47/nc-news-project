@@ -4,11 +4,10 @@ const {
     getTopics
 } = require("./controllers/topics.controllers");
 const {
-    getArticleById
+    getArticleById, getArticles
 } = require("./controllers/articles.controllers")
 const { 
-    handlePsqlErrors, 
-    handleCustomErrors 
+    handlePsqlErrors, handleCustomErrors, handleServerErrors 
 } = require("./errors/errors");
 
 const app = express();
@@ -21,8 +20,16 @@ app.get('/api', (_, res) => {
 
 app.get('/api/articles/:article_id', getArticleById);
 
+app.get('/api/articles', getArticles);
+
+app.all("*", (_, res) => {
+    res.status(404).send({ message: "Not found!"})
+})
+
 app.use(handlePsqlErrors);
 
 app.use(handleCustomErrors);
+
+app.use(handleServerErrors);
 
 module.exports = app;
