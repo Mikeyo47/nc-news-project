@@ -124,3 +124,42 @@ describe("GET /api/articles", () => {
             })
     })
 })
+
+describe("GET /api/articles/:article_id/comments", () => {
+    it("responds with a status code of 200 and an array of all comments with required properties sorted in descending order by created_at", () => {
+        return request(app)
+            .get("/api/articles/3/comments")
+            .expect(200)
+            .then(({body}) => {
+                expect(Array.isArray(body.comments)).toBe(true);
+                expect(body.comments).toHaveLength(2);
+                expect(body.comments).toBeSortedBy('created_at', { descending: true });
+                body.comments.forEach(comment => {
+                    expect(comment).toEqual(expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        article_id: 3,
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number)
+                    }))
+                })
+            })
+    })
+    it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+        return request(app)
+            .get("/api/articles/nonsense/comments")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+        return request(app)
+            .get("/api/articles/9900/comments")
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Not found");
+            });
+    });
+})

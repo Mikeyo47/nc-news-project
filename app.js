@@ -4,7 +4,7 @@ const {
     getTopics
 } = require("./controllers/topics.controllers");
 const {
-    getArticleById, getArticles
+    getArticleById, getArticles, getCommentsByArticleId
 } = require("./controllers/articles.controllers")
 const { 
     handlePsqlErrors, handleCustomErrors, handleServerErrors 
