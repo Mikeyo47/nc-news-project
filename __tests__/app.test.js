@@ -14,7 +14,7 @@ describe('WRONG PATH ERROR', () => {
             .get('/api/invalid-path')
             .expect(404)
             .then(({ body }) => {
-                expect(body.message).toBe('Not found!');
+                expect(body.msg).toBe('Not found!');
             });
     });
 });
@@ -94,7 +94,7 @@ describe("GET /api/articles/:article_id", () => {
             .get("/api/articles/9900")
             .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe("Not found");
+                expect(body.msg).toBe("Not found!");
             });
     });
 });
@@ -159,7 +159,108 @@ describe("GET /api/articles/:article_id/comments", () => {
             .get("/api/articles/9900/comments")
             .expect(404)
             .then(({body}) => {
-                expect(body.msg).toBe("Not found");
+                expect(body.msg).toBe("Not found!");
             });
+    });
+})
+
+describe("POST /api/articles/:article_id/comments", () => {
+    it("responds with a status code of 201 and an object of the posted comment", () => {
+        return request(app)
+            .post("/api/articles/3/comments")
+            .send({ 
+                comment: {
+                    body: "Nice pugs!",
+                    username: "lurker"
+                }
+            })
+            .expect(201)
+            .then(({body}) => {
+                expect(body.postedComment).toEqual(expect.objectContaining({
+                    comment_id: 19,
+                    article_id: 3,
+                    author: "lurker",
+                    body: "Nice pugs!",
+                    created_at: expect.any(String),
+                    votes: 0
+                }))
+            })
+    })
+    it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+        return request(app)
+            .post("/api/articles/nonsense/comments")
+            .send({ 
+                comment: {
+                    body: "Nice pugs!",
+                    username: "lurker"
+                }
+            })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+        return request(app)
+            .post("/api/articles/9900/comments")
+            .send({ 
+                comment: {
+                    body: "Nice pugs!",
+                    username: "lurker"
+                }
+            })
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Not found!");
+            });
+    });
+    it("should respond with a status code of 404: Not found when user posts a comment with nonexistent username", () => {
+        return request(app)
+            .post("/api/articles/4/comments")
+            .send({ 
+                comment: {
+                    body: "Nice pugs!",
+                    username: "yoyo"
+                }
+            })
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Not found!");
+            });
+    });
+    it("should respond with a status code of 400: Bad request when user enters comment with missing values", () => {
+        return request(app)
+            .post("/api/articles/5/comments")
+            .send({ 
+                comment: {
+                    username: "lurker"
+                }
+            })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    it("responds with a status code of 201 and an object of the posted comment, ignoring extra properties", () => {
+        return request(app)
+            .post("/api/articles/5/comments")
+            .send({ 
+                comment: {
+                    body: "Catz are coming!",
+                    username: "rogersop",
+                    extra: "stuff"
+                }
+            })
+            .expect(201)
+            .then(({body}) => {
+                expect(body.postedComment).toEqual(expect.objectContaining({
+                    comment_id: 19,
+                    article_id: 5,
+                    author: "rogersop",
+                    body: "Catz are coming!",
+                    created_at: expect.any(String),
+                    votes: 0
+                }))
+            })
     });
 })
