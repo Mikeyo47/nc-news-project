@@ -14,14 +14,14 @@ exports.selectCommentsByArticleId = (article_id) => {
     });
 }
 
-exports.postNewComment = (article_id, comment) => {
+exports.postNewComment = (article_id, body, username) => {
     return db
         .query(`INSERT INTO comments
         (article_id, author, body)
         VALUES
         ($1, $2, $3)
         RETURNING *;`,
-        [article_id, comment.username, comment.body])
+        [article_id, username, body])
     .then(({ rows }) => {
             return rows[0];
         })
