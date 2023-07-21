@@ -168,12 +168,10 @@ describe("POST /api/articles/:article_id/comments", () => {
     it("responds with a status code of 201 and an object of the posted comment", () => {
         return request(app)
             .post("/api/articles/3/comments")
-            .send({ 
-                comment: {
-                    body: "Nice pugs!",
-                    username: "lurker"
-                }
-            })
+            .send({
+                body: "Nice pugs!",
+                username: "lurker"
+                })
             .expect(201)
             .then(({body}) => {
                 expect(body.postedComment).toEqual(expect.objectContaining({
@@ -189,12 +187,10 @@ describe("POST /api/articles/:article_id/comments", () => {
     it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
         return request(app)
             .post("/api/articles/nonsense/comments")
-            .send({ 
-                comment: {
-                    body: "Nice pugs!",
-                    username: "lurker"
-                }
-            })
+            .send({
+                body: "Nice pugs!",
+                username: "lurker"
+                })
             .expect(400)
             .then(({body}) => {
                 expect(body.msg).toBe("Bad request");
@@ -203,12 +199,10 @@ describe("POST /api/articles/:article_id/comments", () => {
     it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
         return request(app)
             .post("/api/articles/9900/comments")
-            .send({ 
-                comment: {
-                    body: "Nice pugs!",
-                    username: "lurker"
-                }
-            })
+            .send({
+                body: "Nice pugs!",
+                username: "lurker"
+                })
             .expect(404)
             .then(({body}) => {
                 expect(body.msg).toBe("Not found!");
@@ -217,12 +211,10 @@ describe("POST /api/articles/:article_id/comments", () => {
     it("should respond with a status code of 404: Not found when user posts a comment with nonexistent username", () => {
         return request(app)
             .post("/api/articles/4/comments")
-            .send({ 
-                comment: {
-                    body: "Nice pugs!",
-                    username: "yoyo"
-                }
-            })
+            .send({
+                body: "Nice pugs!",
+                username: "yoyo"
+                })
             .expect(404)
             .then(({body}) => {
                 expect(body.msg).toBe("Not found!");
@@ -231,11 +223,9 @@ describe("POST /api/articles/:article_id/comments", () => {
     it("should respond with a status code of 400: Bad request when user enters comment with missing values", () => {
         return request(app)
             .post("/api/articles/5/comments")
-            .send({ 
-                comment: {
-                    username: "lurker"
-                }
-            })
+            .send({
+                username: "lurker"
+                })
             .expect(400)
             .then(({body}) => {
                 expect(body.msg).toBe("Bad request");
@@ -244,13 +234,11 @@ describe("POST /api/articles/:article_id/comments", () => {
     it("responds with a status code of 201 and an object of the posted comment, ignoring extra properties", () => {
         return request(app)
             .post("/api/articles/5/comments")
-            .send({ 
-                comment: {
-                    body: "Catz are coming!",
-                    username: "rogersop",
-                    extra: "stuff"
-                }
-            })
+            .send({
+                body: "Catz are coming!",
+                username: "rogersop",
+                extra: "stuff"
+                })
             .expect(201)
             .then(({body}) => {
                 expect(body.postedComment).toEqual(expect.objectContaining({
