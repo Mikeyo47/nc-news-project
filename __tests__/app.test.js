@@ -162,6 +162,14 @@ describe("GET /api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("Not found!");
             });
     });
+    it("responds with a status code of 404: Not found when user enters an existing article ID but comment does not exist", () => {
+        return request(app)
+            .get("/api/articles/7/comments")
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Not found!");
+            });
+    });
 })
 
 describe("POST /api/articles/:article_id/comments", () => {
@@ -254,7 +262,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     });
 })
 
-describe('PATCH /api/articles/:article_id', () => {
+describe("PATCH /api/articles/:article_id", () => {
     it("responds with a status code of 200 and an article object with the votes increased by 1", () => {
         return request(app)
             .patch("/api/articles/3")
@@ -362,3 +370,58 @@ describe('PATCH /api/articles/:article_id', () => {
             })
     })
 })
+
+describe("DELETE /api/comments/:comment_id", () => {
+    it("responds with a status code of 204 and an empty response object", () => {
+        return request(app)
+            .delete("/api/comments/5")
+            .expect(204)
+            .then(({body}) => {
+                expect(body).toEqual({});
+            });
+    });
+    it("responds with a status code of 404 when attempting to access deleted comment", () => {
+        // check that comment exists (article 6 only has 1 comment)
+        return request(app)
+            .get("/api/articles/6/comments")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.comments[0]).toEqual(expect.objectContaining({
+                    comment_id: 16,
+                    article_id: 6,
+                }))
+            })
+            .then(() => {
+                // delete comment
+                return request(app)
+                    .delete("/api/comments/16")
+                    .expect(204)
+                    .then(() => {
+                        // check that comment doesn't exist
+                        return request(app)
+                            .get("/api/articles/6/comments")
+                            .expect(404)
+                            .then(({body}) => {
+                                expect(body.msg).toBe("Not found!");
+                            });
+                    });
+            });
+    });
+    it("responds with a status code of 400: Bad request when user enters invalid input for comment_id", () => {
+        return request(app)
+            .delete("/api/comments/nonsense")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    test.todo("fix when able to check if comment exists through GET /api/comments/:comment_id")
+        // it("responds with a status code of 404: Not found when user enters valid but non-existing input for comment_id", () => {
+        //     return request(app)
+        //         .delete("/api/comments/9900")
+        //         .expect(404)
+        //         .then(({body}) => {
+        //             expect(body.msg).toBe("Not found!");
+        //         });
+        // });
+});
