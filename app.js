@@ -1,14 +1,17 @@
 const express = require("express");
 const endpoints = require("./endpoints.json");
 const {
-    getTopics
+    getAllTopics
 } = require("./controllers/topics.controllers");
 const {
-    getArticleById, getArticles, patchArticleVotes
+    getArticleById, getAllArticles, patchArticleVotes
 } = require("./controllers/articles.controllers")
 const {
     getCommentsByArticleId, postNewComment, deleteCommentById
 } = require("./controllers/comments.controllers");
+const {
+    getAllUsers
+} = require("./controllers/users.controllers");
 const { 
     handlePsqlErrors, handleCustomErrors, handleServerErrors 
 } = require("./errors/errors");
@@ -16,15 +19,17 @@ const {
 const app = express();
 app.use(express.json());
 
-app.get('/api/topics', getTopics);
-
 app.get('/api', (_, res) => {
     res.status(200).send({ endpoints });
 });
 
-app.get('/api/articles/:article_id', getArticleById);
+app.get('/api/topics', getAllTopics);
 
-app.get('/api/articles', getArticles);
+app.get('/api/articles', getAllArticles);
+
+app.get('/api/users', getAllUsers);
+
+app.get('/api/articles/:article_id', getArticleById);
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
