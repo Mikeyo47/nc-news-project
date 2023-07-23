@@ -4,10 +4,10 @@ const {
     getTopics
 } = require("./controllers/topics.controllers");
 const {
-    getArticleById, getArticles
+    getArticleById, getArticles, patchArticleVotes
 } = require("./controllers/articles.controllers")
 const {
-    getCommentsByArticleId, addNewComment
+    getCommentsByArticleId, postNewComment
 } = require("./controllers/comments.controllers");
 const { 
     handlePsqlErrors, handleCustomErrors, handleServerErrors 
@@ -28,7 +28,9 @@ app.get('/api/articles', getArticles);
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId);
 
-app.post('/api/articles/:article_id/comments', addNewComment);
+app.post('/api/articles/:article_id/comments', postNewComment);
+
+app.patch('/api/articles/:article_id', patchArticleVotes);
 
 app.all("*", (_, res) => {
     res.status(404).send({ msg: "Not found!"})
