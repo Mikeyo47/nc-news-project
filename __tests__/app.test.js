@@ -9,7 +9,7 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe('WRONG PATH ERROR', () => {
-    it('returns a status code of 404 and a custom error message when trying to reach any non-existing path', () => {
+    it('responds with a status code of 404 and a custom error message when trying to reach any non-existing path', () => {
         return request(app)
             .get('/api/invalid-path')
             .expect(404)
@@ -25,7 +25,7 @@ describe("GET /api/topics", () => {
             .get("/api/topics")
             .expect(200);
     });
-    it("should have a 'slug' and 'description' property in each returned object within the topics array", () => {
+    it("checks that a 'slug' and 'description' property exists in each returned object within the topics array", () => {
         return request(app)
             .get("/api/topics")
             .then(({body}) => {
@@ -42,7 +42,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api", () => {
-    it("should respond with status code 200 and an object describing all the available endpoints", () => {
+    it("responds with status code 200 and an object describing all the available endpoints", () => {
         return request(app)
             .get("/api")
             .expect(200)
@@ -50,7 +50,7 @@ describe("GET /api", () => {
                 expect(body.endpoints).toEqual(endpoints);
             });
     });
-    it("should check that the response object is not empty", () => {
+    it("checks that the response object is not empty", () => {
         return request(app)
             .get("/api/")
             .then(({body}) => {
@@ -60,7 +60,7 @@ describe("GET /api", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-    it("should respond with a status code of 200 when user enters existing article_id", () => {
+    it("responds with a status code of 200 when user enters existing article_id", () => {
         return request(app)
             .get("/api/articles/2")
             .expect(200);
@@ -81,7 +81,7 @@ describe("GET /api/articles/:article_id", () => {
                 }));
             })
     });
-    it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+    it("responds with a status code of 400: Bad request when user enters invalid input for article_id", () => {
         return request(app)
             .get("/api/articles/nonsense")
             .expect(400)
@@ -89,7 +89,7 @@ describe("GET /api/articles/:article_id", () => {
                 expect(body.msg).toBe("Bad request");
             });
     });
-    it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+    it("responds with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
         return request(app)
             .get("/api/articles/9900")
             .expect(404)
@@ -146,7 +146,7 @@ describe("GET /api/articles/:article_id/comments", () => {
                 })
             })
     })
-    it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+    it("responds with a status code of 400: Bad request when user enters invalid input for article_id", () => {
         return request(app)
             .get("/api/articles/nonsense/comments")
             .expect(400)
@@ -154,7 +154,7 @@ describe("GET /api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("Bad request");
             });
     });
-    it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+    it("responds with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
         return request(app)
             .get("/api/articles/9900/comments")
             .expect(404)
@@ -184,7 +184,7 @@ describe("POST /api/articles/:article_id/comments", () => {
                 }))
             })
     })
-    it("should respond with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+    it("responds with a status code of 400: Bad request when user enters invalid input for article_id", () => {
         return request(app)
             .post("/api/articles/nonsense/comments")
             .send({
@@ -196,7 +196,7 @@ describe("POST /api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("Bad request");
             });
     });
-    it("should respond with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+    it("responds with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
         return request(app)
             .post("/api/articles/9900/comments")
             .send({
@@ -208,7 +208,7 @@ describe("POST /api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("Not found!");
             });
     });
-    it("should respond with a status code of 404: Not found when user posts a comment with nonexistent username", () => {
+    it("responds with a status code of 404: Not found when user posts a comment with nonexistent username", () => {
         return request(app)
             .post("/api/articles/4/comments")
             .send({
@@ -220,7 +220,7 @@ describe("POST /api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("Not found!");
             });
     });
-    it("should respond with a status code of 400: Bad request when user enters comment with missing values", () => {
+    it("responds with a status code of 400: Bad request when user enters comment with missing values", () => {
         return request(app)
             .post("/api/articles/5/comments")
             .send({
@@ -249,6 +249,116 @@ describe("POST /api/articles/:article_id/comments", () => {
                     created_at: expect.any(String),
                     votes: 0
                 }))
+                expect(body.postedComment.extra).not.toBeDefined();
             })
     });
+})
+
+describe('PATCH /api/articles/:article_id', () => {
+    it("responds with a status code of 200 and an article object with the votes increased by 1", () => {
+        return request(app)
+            .patch("/api/articles/3")
+            .send({ inc_votes : 1 })
+            .expect(200)
+            .then(({body}) => {
+                expect(body.patchedArticle).toEqual(expect.objectContaining({
+                    article_id: 3,
+                    title: "Eight pug gifs that remind me of mitch",
+                    topic: "mitch",
+                    author: "icellusedkars",
+                    body: "some gifs",
+                    created_at: expect.any(String),
+                    votes: 1,
+                    article_img_url:
+                    "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                }))
+            })
+    })
+    it("responds with a status code of 200 and an article object with the votes decreased by 98", () => {
+        return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes : -98 })
+            .expect(200)
+            .then(({body}) => {
+                expect(body.patchedArticle).toEqual(expect.objectContaining({
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: expect.any(String),
+                    votes: 2,
+                    article_img_url:
+                    "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                }))
+            })
+    })
+    it("responds with a status code of 400: Bad request when user enters invalid input for article_id", () => {
+        return request(app)
+            .patch("/api/articles/nonsense")
+            .send({ inc_votes : 1 })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    it("responds with a status code of 404: Not found when user enters valid but non-existing input for article_id", () => {
+        return request(app)
+            .patch("/api/articles/9900")
+            .send({ inc_votes : 1 })
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Not found!");
+            });
+    });
+    it("responds with a status code of 400: Bad request when patch object has invalid key", () => {
+        return request(app)
+            .patch("/api/articles/4")
+            .send({ invalid_votes : 1 })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    it("responds with a status code of 400: Bad request when patch object has invalid increment value", () => {
+        return request(app)
+            .patch("/api/articles/4")
+            .send({ inc_votes : "invalid" })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    it("responds with a status code of 400: Bad request when patch object is empty", () => {
+        return request(app)
+            .patch("/api/articles/4")
+            .send({})
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Bad request");
+            });
+    });
+    it("responds with a status code of 200 and an article object with the votes increased by 1, ignoring extra input", () => {
+        return request(app)
+            .patch("/api/articles/3")
+            .send({ 
+                inc_votes : 1,
+                extra: "stuff"
+            })
+            .expect(200)
+            .then(({body}) => {
+                expect(body.patchedArticle).toEqual(expect.objectContaining({
+                    article_id: 3,
+                    title: "Eight pug gifs that remind me of mitch",
+                    topic: "mitch",
+                    author: "icellusedkars",
+                    body: "some gifs",
+                    created_at: expect.any(String),
+                    votes: 1,
+                    article_img_url:
+                    "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+                }))
+                expect(body.patchedArticle.extra).not.toBeDefined();
+            })
+    })
 })

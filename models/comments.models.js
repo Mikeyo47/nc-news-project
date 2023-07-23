@@ -14,7 +14,7 @@ exports.selectCommentsByArticleId = (article_id) => {
     });
 }
 
-exports.postNewComment = (article_id, body, username) => {
+exports.insertNewComment = (article_id, body, username) => {
     return db
         .query(`INSERT INTO comments
         (article_id, author, body)
