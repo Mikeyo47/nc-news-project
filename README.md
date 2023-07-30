@@ -18,39 +18,39 @@ Before running the project, you need to ensure the following software is install
 Follow these steps to set up the project locally:
 
 1. Clone the repository:
-    ```shell
+    ```
     git clone https://github.com/Mikeyo47/nc-news-project
     ```
 
 2. Change into the project directory:
-    ```shell
+    ```s
     cd <project-directory>
     ```
 
 3. Install NPM packages:
-    ```shell
+    ```
     npm install
     ```
 
 4. Set up the test and development databases:
-    ```shell
+    ```
     npm run setup-dbs
     ```
 
-5. Create two `.env` files in the root of the project: 
-    a. `.env.development` and add PGDATABASE=nc_news into it.
+5. Create two `.env` files in the root of the project:  
+    a. `.env.development` and add PGDATABASE=nc_news into it.  
     b. `.env.test` and add PGDATABASE=nc_news_test into it.
 
-    Ensure that these .env files are gitignored so that sensitive information is not exposed in your repository. 
+    Ensure that these .env files are gitignored so that sensitive information is not exposed in your repository.  
     An example .env-example file has been included as a reference.
 
 6. Seed the development database:
-    ```shell
+    ```
     npm run seed
     ```
 
 7. Run all tests for the project:
-    ```shell
+    ```
     npm test
     ```
 
@@ -64,7 +64,7 @@ Please make sure to follow the installation instructions and have the necessary 
 
 See available endpoints hosted [here](https://nc-news-project-cyk6.onrender.com/api)
 
-Database hosted on [ElephantSQL](https://www.elephantsql.com/)
+Database hosted on [ElephantSQL](https://www.elephantsql.com/)  
 API hosted on [Render](https://render.com/)
 
 Please be patient when loading for first time, as hosting is done on free tiers.
