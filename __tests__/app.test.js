@@ -8,13 +8,13 @@ const endpoints = require("../endpoints.json");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
-describe('WRONG PATH ERROR', () => {
-    it('responds with a status code of 404 and a custom error message when trying to reach any non-existing path', () => {
+describe("WRONG PATH ERROR", () => {
+    it("responds with a status code of 404 and a custom error message when trying to reach any non-existing path", () => {
         return request(app)
-            .get('/api/invalid-path')
+            .get("/api/invalid-path")
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe('Not found!');
+                expect(body.msg).toBe("Not found!");
             });
     });
 });
@@ -107,7 +107,7 @@ describe("GET /api/articles", () => {
             .then(({body}) => {
                 expect(Array.isArray(body.articles)).toBe(true);
                 expect(body.articles).toHaveLength(13);
-                expect(body.articles).toBeSortedBy('created_at', { descending: true });
+                expect(body.articles).toBeSortedBy("created_at", { descending: true });
                 body.articles.forEach(article => {
                     expect(article).toEqual(expect.objectContaining({
                         author: expect.any(String),
@@ -123,7 +123,78 @@ describe("GET /api/articles", () => {
                 })
             })
     })
-})
+    it("responds with a status code of 200 and accepts a topic query", () => {
+        return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeArrayOfSize(12);
+                body.articles.forEach(article => {
+                    expect(article.topic).toBe("mitch");
+                })
+            })
+    })
+    it("responds with a status code of 200 and accepts a topic query", () => {
+        return request(app)
+            .get("/api/articles?topic=cats")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeArrayOfSize(1);
+                expect(body.articles[0].topic).toBe("cats");
+            })
+    })
+    it("responds with a status code of 200 and an empty array", () => {
+        return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeArrayOfSize(0);
+            })
+    })
+    it("responds with a status code of 200 and accepts an order query", () => {
+        return request(app)
+            .get("/api/articles?order=asc")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeSortedBy("created_at", {descending: false});
+            })
+    })
+    it("responds with a status code of 200 and accepts multiple queries", () => {
+        return request(app)
+            .get("/api/articles?topic=mitch&sort_by=author&order=asc")
+            .expect(200)
+            .then(({body}) => {
+                expect(body.articles).toBeSortedBy("author", {descending: false});
+                body.articles.forEach(article => {
+                    expect(article.topic).toBe("mitch");
+                })
+            })
+    })
+    it("responds with a status code of 404 when sent non-existing topic query", () => {
+        return request(app)
+            .get("/api/articles?topic=nonsense")
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("nonsense not found!");
+            });
+    });
+    it("responds with a status code of 400 when sent an invalid sort_by value", () => {
+        return request(app)
+            .get("/api/articles?sort_by=nonsense")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Cannot sort by nonsense.");
+            });
+    });
+    it("responds with a status code of 400 when sent an invalid order value", () => {
+        return request(app)
+            .get("/api/articles?order=nonsense")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Cannot order by nonsense.");
+            });
+    });
+});
 
 describe("GET /api/articles/:article_id/comments", () => {
     it("responds with a status code of 200 and an array of all comments with required properties sorted in descending order by created_at", () => {
