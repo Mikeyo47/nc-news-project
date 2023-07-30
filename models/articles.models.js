@@ -40,7 +40,7 @@ exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'desc') => {
         LEFT JOIN comments c USING(article_id)
         `;
 
-    if (!greenlistSortBy.includes(sort_by.toLowerCase())) {
+    if (!greenlistSortBy.includes(sort_by)) {
         return Promise.reject({status: 400, msg: `Cannot sort by ${sort_by}.`})
     }
 
