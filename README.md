@@ -10,8 +10,8 @@ This project is an API designed to serve as the backend for a social news aggreg
 
 Before running the project, you need to ensure the following software is installed on your system:
 
-- Node.js v16 or later. Download Node[https://nodejs.org/]
-- PostgreSQL 14 or later Download PSQL[https://www.postgresql.org/download/]
+- Node.js v16 or later. [Download Node](https://nodejs.org/)
+- PostgreSQL 14 or later [Download PSQL](https://www.postgresql.org/download/)
 
 ## Cloning and Installation
 
@@ -19,7 +19,7 @@ Follow these steps to set up the project locally:
 
 1. Clone the repository:
     ```shell
-    git clone <https://github.com/Mikeyo47/nc-news-project>
+    git clone https://github.com/Mikeyo47/nc-news-project
     ```
 
 2. Change into the project directory:
@@ -56,6 +56,15 @@ Follow these steps to set up the project locally:
 
 ## Background
 
-This project has been created as part of the Northcoders bootcamp using Node.js, Express.js, and PostgreSQL, following the MVC design patterns and TDD.
+This project has been created as part of the Northcoders bootcamp using Node.js, Express.js, and PostgreSQL, following the MVC design patterns and TDD. 
 
 Please make sure to follow the installation instructions and have the necessary dependencies before running the project locally. If you encounter any issues or have questions, feel free to reach out or send a pull request.
+
+### Live version hosting
+
+See available endpoints hosted [here](https://nc-news-project-cyk6.onrender.com/api)
+
+Database hosted on [ElephantSQL](https://www.elephantsql.com/)
+API hosted on [Render](https://render.com/)
+
+Please be patient when loading for first time, as hosting is done on free tiers.
