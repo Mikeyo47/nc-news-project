@@ -4,6 +4,10 @@ const request = require('supertest');
 const db = require('../db/connection');
 const data = require("../db/data/test-data");
 const endpoints = require("../endpoints.json");
+const {
+    checkCommentExists,
+    checkTopicExists
+} = require("../db/seeds/utils");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -487,15 +491,14 @@ describe("DELETE /api/comments/:comment_id", () => {
                 expect(body.msg).toBe("Bad request");
             });
     });
-    test.todo("fix when able to check if comment exists through GET /api/comments/:comment_id")
-        // it("responds with a status code of 404: Not found when user enters valid but non-existing input for comment_id", () => {
-        //     return request(app)
-        //         .delete("/api/comments/9900")
-        //         .expect(404)
-        //         .then(({body}) => {
-        //             expect(body.msg).toBe("Not found!");
-        //         });
-        // });
+    it("responds with a status code of 404: Not found when user enters valid but non-existing input for comment_id", () => {
+        return request(app)
+            .delete("/api/comments/9900")
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("Comment ID number 9900 does not exist!");
+            });
+    });
 });
 
 describe("GET /api/users", () => {
@@ -516,3 +519,36 @@ describe("GET /api/users", () => {
             });
     });
 });
+
+describe("DATABASE UTILITY FUNCTIONS TESTS", () => {
+    describe("checkTopicExists()", () => {
+        test("resolves with no error when topic exists in the database", () => {
+          return checkTopicExists("mitch").then((result) => {
+            expect(result).toBeUndefined();
+          });
+        });
+        test("responds with a status code of 404 and error message when topic does not exist in the database", () => {
+          return checkTopicExists("invalid-topic").catch((result) => {
+            expect(result).toEqual({ status: 404, msg: "invalid-topic not found!" });
+          });
+        });
+        test("resolves with no error when topic is not provided", () => {
+          return checkTopicExists().then((result) => {
+            expect(result).toBeUndefined();
+          });
+        });
+      });
+      
+      describe("checkCommentExists()", () => {
+        test("resolves with no error when comment exists in the database", () => {
+          return checkCommentExists(3).then((result) => {
+            expect(result).toBeUndefined();
+          });
+        });
+        test("responds with a status code of 404 and error message when comment does not exist in the database", () => {
+          return checkCommentExists(9900).catch((result) => {
+            expect(result).toEqual({ status: 404, msg: "Comment ID number 9900 does not exist!" })
+          })
+        })
+      })
+})

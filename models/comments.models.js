@@ -1,4 +1,7 @@
-const db = require("../db/connection")
+const db = require("../db/connection");
+const {
+    checkCommentExists
+} = require("../db/seeds/utils");
 
 exports.selectCommentsByArticleId = (article_id) => {
     return db
@@ -32,13 +35,15 @@ exports.insertNewComment = (article_id, body, username) => {
 }
 
 exports.deleteComment = (comment_id) => {
-    return db
-        .query(
-            `DELETE FROM comments
-            WHERE comment_id = $1;`,
-            [comment_id]
-        )
-        .then(() => {
-            return;
-        })
+    return checkCommentExists(comment_id).then(() => {
+        return db
+            .query(
+                `DELETE FROM comments
+                WHERE comment_id = $1;`,
+                [comment_id]
+            )
+            .then(() => {
+                return;
+            })
+    })
 }
