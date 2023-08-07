@@ -21,7 +21,7 @@ exports.selectArticleById = (article_id) => {
         });
 }
 
-exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'desc') => {
+exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'desc', limit = 10, p = 1) => {
     const greenlistSortBy = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count'];
     const greenlistOrder = ['desc', 'asc'];
 
@@ -48,6 +48,14 @@ exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'desc') => {
         return Promise.reject({status: 400, msg: `Cannot order by ${order}.`})
     }
 
+    if (isNaN(limit)) {
+        return Promise.reject({status: 400, msg: `Cannot set page limit to ${limit}.`})
+    }
+
+    if (isNaN(p)) {
+        return Promise.reject({status: 400, msg: `Cannot go to page '${p}': invalid type.`})
+    }
+
     if (topic) {
         queryStr += " WHERE a.topic = $1";
         topicValue.push(topic);
@@ -55,7 +63,8 @@ exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'desc') => {
 
     queryStr += `
         GROUP BY a.article_id
-        ORDER BY ${sort_by} ${order};`
+        ORDER BY ${sort_by} ${order}
+        LIMIT ${limit} OFFSET ${(p - 1) * limit};`
 
 
     return checkTopicExists(topic)

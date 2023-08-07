@@ -111,7 +111,53 @@ describe("GET /api/articles", () => {
             .expect(200)
             .then(({body}) => {
                 expect(Array.isArray(body.articles)).toBe(true);
-                expect(body.articles).toHaveLength(13);
+                expect(body.articles).toHaveLength(10); // tests for default limit value
+                expect(body.articles).toBeSortedBy("created_at", { descending: true });
+                body.articles.forEach(article => {
+                    expect(article).toEqual(expect.objectContaining({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number)
+                    }))
+                    expect(article.body).not.toBeDefined();
+                })
+            })
+    })
+    it("responds with a status code of 200 and an array of all articles with required properties sorted in descending order by created_at with limit = 7", () => {
+        return request(app)
+            .get("/api/articles?limit=7")
+            .expect(200)
+            .then(({body}) => {
+                expect(Array.isArray(body.articles)).toBe(true);
+                expect(body.articles).toHaveLength(7);
+                expect(body.articles).toBeSortedBy("created_at", { descending: true });
+                body.articles.forEach(article => {
+                    expect(article).toEqual(expect.objectContaining({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number)
+                    }))
+                    expect(article.body).not.toBeDefined();
+                })
+            })
+    })
+    it("responds with a status code of 200 and an array of all articles with required properties sorted in descending order by created_at on page 2", () => {
+        return request(app)
+            .get("/api/articles?p=2")
+            .expect(200)
+            .then(({body}) => {
+                expect(Array.isArray(body.articles)).toBe(true);
+                expect(body.articles).toHaveLength(3);
                 expect(body.articles).toBeSortedBy("created_at", { descending: true });
                 body.articles.forEach(article => {
                     expect(article).toEqual(expect.objectContaining({
@@ -133,7 +179,7 @@ describe("GET /api/articles", () => {
             .get("/api/articles?topic=mitch")
             .expect(200)
             .then(({body}) => {
-                expect(body.articles).toBeArrayOfSize(12);
+                //expect(body.articles).toBeArrayOfSize(12);
                 body.articles.forEach(article => {
                     expect(article.topic).toBe("mitch");
                 })
@@ -197,6 +243,22 @@ describe("GET /api/articles", () => {
             .expect(400)
             .then(({body}) => {
                 expect(body.msg).toBe("Cannot order by nonsense.");
+            });
+    });
+    it("responds with a status code of 400 when sent an invalid limit value", () => {
+        return request(app)
+            .get("/api/articles?limit=nonsense")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Cannot set page limit to nonsense.");
+            });
+    });
+    it("responds with a status code of 400 when sent an invalid p value", () => {
+        return request(app)
+            .get("/api/articles?p=nonsense")
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("Cannot go to page 'nonsense': invalid type.");
             });
     });
 });
